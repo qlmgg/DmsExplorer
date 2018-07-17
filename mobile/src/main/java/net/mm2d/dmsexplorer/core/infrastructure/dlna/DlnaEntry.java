@@ -22,7 +22,7 @@ import io.reactivex.subjects.Subject;
 public class DlnaEntry implements Entry {
     @NonNull
     private final DlnaServer mDlnaServer;
-    @NonNull
+    @Nullable
     private final DlnaEntry mParentEntry;
     @NonNull
     private final CdsObject mCdsObject;
@@ -33,7 +33,7 @@ public class DlnaEntry implements Entry {
 
     DlnaEntry(
             @NonNull final DlnaServer server,
-            @NonNull final DlnaEntry parent,
+            @Nullable final DlnaEntry parent,
             @NonNull final CdsObject cdsObject) {
         mDlnaServer = server;
         mParentEntry = parent;
@@ -84,10 +84,15 @@ public class DlnaEntry implements Entry {
         return mDlnaServer;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public DlnaEntry getParent() {
         return mParentEntry;
+    }
+
+    @Override
+    public boolean isRoot() {
+        return mParentEntry == null;
     }
 
     @NonNull

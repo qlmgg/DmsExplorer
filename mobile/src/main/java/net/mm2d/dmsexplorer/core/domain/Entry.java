@@ -8,6 +8,7 @@
 package net.mm2d.dmsexplorer.core.domain;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import net.mm2d.dmsexplorer.domain.entity.ContentType;
 
@@ -32,8 +33,10 @@ public interface Entry {
     @NonNull
     Server getServer();
 
-    @NonNull
+    @Nullable
     Entry getParent();
+
+    boolean isRoot();
 
     @NonNull
     String getName();
