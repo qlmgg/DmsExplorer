@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import net.mm2d.android.upnp.cds.CdsObject;
+import net.mm2d.android.upnp.cds.PropertyParser;
 import net.mm2d.android.upnp.cds.Tag;
 import net.mm2d.dmsexplorer.domain.entity.ContentEntity;
 
@@ -59,7 +60,7 @@ public class PlaybackTargetModel {
         }
         mUri = Uri.parse(mTargetRes.getValue());
         final String protocolInfo = mTargetRes.getAttribute(CdsObject.PROTOCOL_INFO);
-        mMimeType = CdsObject.extractMimeTypeFromProtocolInfo(protocolInfo);
+        mMimeType = PropertyParser.extractMimeTypeFromProtocolInfo(protocolInfo);
     }
 
     @NonNull
@@ -91,8 +92,8 @@ public class PlaybackTargetModel {
             final String bitrate = tag.getAttribute(CdsObject.BITRATE);
             final String resolution = tag.getAttribute(CdsObject.RESOLUTION);
             final String protocolInfo = tag.getAttribute(CdsObject.PROTOCOL_INFO);
-            final String mimeType = CdsObject.extractMimeTypeFromProtocolInfo(protocolInfo);
-            final String protocol = CdsObject.extractProtocolFromProtocolInfo(protocolInfo);
+            final String mimeType = PropertyParser.extractMimeTypeFromProtocolInfo(protocolInfo);
+            final String protocol = PropertyParser.extractProtocolFromProtocolInfo(protocolInfo);
             final StringBuilder sb = new StringBuilder();
             if (protocol != null) {
                 sb.append(protocol);

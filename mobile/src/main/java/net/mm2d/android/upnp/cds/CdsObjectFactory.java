@@ -115,7 +115,7 @@ final class CdsObjectFactory {
             @NonNull final Element element,
             @NonNull final Tag rootTag) {
         try {
-            return new CdsObject(udn, element, rootTag);
+            return new CdsObjectImpl(udn, element, rootTag);
         } catch (final IllegalArgumentException e) {
             Log.w(e);
         }
