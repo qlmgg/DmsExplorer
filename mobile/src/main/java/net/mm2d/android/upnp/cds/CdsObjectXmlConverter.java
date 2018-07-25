@@ -51,7 +51,7 @@ public class CdsObjectXmlConverter {
             document.appendChild(didl);
             final Element item = makeItemElement(document, object);
             didl.appendChild(item);
-            for (final Map.Entry<String, List<Tag>> tagListEntry : object.getTagMap().getRawMap().entrySet()) {
+            for (final Map.Entry<String, List<Tag>> tagListEntry : object.getTagMap().entrySet()) {
                 final String key = tagListEntry.getKey();
                 if (TextUtils.isEmpty(key)) {
                     continue;

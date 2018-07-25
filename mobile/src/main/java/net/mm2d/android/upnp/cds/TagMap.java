@@ -15,9 +15,11 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * シンプルなXML情報を表現するクラス。
@@ -28,6 +30,33 @@ import java.util.Map.Entry;
  * @author <a href="mailto:ryo@mm2d.net">大前良介 (OHMAE Ryosuke)</a>
  */
 class TagMap implements Parcelable {
+    static class Builder {
+        private final Map<String, List<Tag>> mMap = new ArrayMap<>();
+
+        /**
+         * タグ情報を格納する。
+         *
+         * @param name タグ名
+         * @param tag  格納するタグ情報
+         */
+        void putTag(
+                @NonNull final String name,
+                @NonNull final Tag tag) {
+            List<Tag> tags = mMap.get(name);
+            if (tags == null) {
+                tags = new ArrayList<>(1);
+                mMap.put(name, tags);
+            }
+            tags.add(tag);
+        }
+
+        TagMap build() {
+            return new TagMap(mMap);
+        }
+    }
+
+    static final TagMap EMPTY = new TagMap(Collections.emptyMap());
+
     /**
      * XMLのタグ情報。
      *
@@ -39,8 +68,8 @@ class TagMap implements Parcelable {
     /**
      * インスタンス作成。
      */
-    TagMap() {
-        mMap = new ArrayMap<>();
+    TagMap(final Map<String, List<Tag>> map) {
+        mMap = map;
     }
 
     /**
@@ -98,23 +127,6 @@ class TagMap implements Parcelable {
             return new TagMap[size];
         }
     };
-
-    /**
-     * タグ情報を格納する。
-     *
-     * @param name タグ名
-     * @param tag  格納するタグ情報
-     */
-    void putTag(
-            @NonNull final String name,
-            @NonNull final Tag tag) {
-        List<Tag> tags = mMap.get(name);
-        if (tags == null) {
-            tags = new ArrayList<>(1);
-            mMap.put(name, tags);
-        }
-        tags.add(tag);
-    }
 
     /**
      * XPATH風の指定で示された値を返す。
@@ -258,8 +270,8 @@ class TagMap implements Parcelable {
         return mMap.get(tagName);
     }
 
-    Map<String, List<Tag>> getRawMap() {
-        return mMap;
+    Set<Entry<String, List<Tag>>> entrySet() {
+        return mMap.entrySet();
     }
 
     @Override

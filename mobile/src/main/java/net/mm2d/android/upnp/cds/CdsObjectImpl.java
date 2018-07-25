@@ -148,16 +148,16 @@ class CdsObjectImpl implements CdsObject {
      */
     @NonNull
     private static TagMap parseElement(@NonNull final Element element) {
-        final TagMap map = new TagMap();
-        map.putTag("", new Tag(element, true));
+        final TagMap.Builder builder = new TagMap.Builder();
+        builder.putTag("", new Tag(element, true));
         Node node = element.getFirstChild();
         for (; node != null; node = node.getNextSibling()) {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
-            map.putTag(node.getNodeName(), new Tag((Element) node));
+            builder.putTag(node.getNodeName(), new Tag((Element) node));
         }
-        return map;
+        return builder.build();
     }
 
     @ContentType
