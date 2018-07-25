@@ -149,13 +149,13 @@ class CdsObjectImpl implements CdsObject {
     @NonNull
     private static TagMap parseElement(@NonNull final Element element) {
         final TagMap.Builder builder = new TagMap.Builder();
-        builder.putTag("", new Tag(element, true));
+        builder.putTag("", Tag.create(element, true));
         Node node = element.getFirstChild();
         for (; node != null; node = node.getNextSibling()) {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
-            builder.putTag(node.getNodeName(), new Tag((Element) node));
+            builder.putTag(node.getNodeName(), Tag.create((Element) node));
         }
         return builder.build();
     }
@@ -175,6 +175,7 @@ class CdsObjectImpl implements CdsObject {
         }
         return TYPE_UNKNOWN;
     }
+
     @Override
     @NonNull
     public String getUdn() {

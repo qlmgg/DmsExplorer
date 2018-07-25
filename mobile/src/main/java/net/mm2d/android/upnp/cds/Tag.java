@@ -33,13 +33,6 @@ import java.util.Map.Entry;
  * @author <a href="mailto:ryo@mm2d.net">大前良介 (OHMAE Ryosuke)</a>
  */
 public class Tag implements Parcelable {
-    @NonNull
-    private final String mName;
-    @NonNull
-    private final String mValue;
-    @NonNull
-    private final Map<String, String> mAttribute;
-
     /**
      * インスタンス作成。
      *
@@ -47,8 +40,8 @@ public class Tag implements Parcelable {
      *
      * @param element タグ情報
      */
-    Tag(@NonNull final Element element) {
-        this(element, false);
+    static Tag create(@NonNull final Element element) {
+        return create(element, false);
     }
 
     /**
@@ -59,10 +52,10 @@ public class Tag implements Parcelable {
      * @param element タグ情報
      * @param root    タグがitem/containerのときtrue
      */
-    Tag(
+    static Tag create(
             @NonNull final Element element,
             final boolean root) {
-        this(element, root ? "" : element.getTextContent());
+        return create(element, root ? "" : element.getTextContent());
     }
 
     /**
@@ -71,22 +64,38 @@ public class Tag implements Parcelable {
      * @param element タグ情報
      * @param value   タグの値
      */
-    private Tag(
+    private static Tag create(
             @NonNull final Element element,
             @NonNull final String value) {
-        mName = element.getTagName();
-        mValue = value;
-        final NamedNodeMap attributes = element.getAttributes();
-        final int size = attributes.getLength();
+        final String name = element.getTagName();
+        final NamedNodeMap nodeMap = element.getAttributes();
+        final int size = nodeMap.getLength();
         if (size == 0) {
-            mAttribute = Collections.emptyMap();
-            return;
+            return new Tag(name, value, Collections.emptyMap());
         }
-        mAttribute = new LinkedHashMap<>(size);
+        final Map<String, String> attributes = new LinkedHashMap<>(size);
         for (int i = 0; i < size; i++) {
-            final Node attr = attributes.item(i);
-            mAttribute.put(attr.getNodeName(), attr.getNodeValue());
+            final Node node = nodeMap.item(i);
+            attributes.put(node.getNodeName(), node.getNodeValue());
         }
+        return new Tag(name, value, attributes);
+    }
+
+    public static Tag EMPTY = new Tag("", "", Collections.emptyMap());
+    @NonNull
+    private final String mName;
+    @NonNull
+    private final String mValue;
+    @NonNull
+    private final Map<String, String> mAttributes;
+
+    private Tag(
+            @NonNull final String name,
+            @NonNull final String value,
+            @NonNull final Map<String, String> attributes) {
+        mName = name;
+        mValue = value;
+        mAttributes = attributes;
     }
 
     /**
@@ -117,7 +126,7 @@ public class Tag implements Parcelable {
      */
     @Nullable
     public String getAttribute(@Nullable final String name) {
-        return mAttribute.get(name);
+        return mAttributes.get(name);
     }
 
     /**
@@ -127,17 +136,17 @@ public class Tag implements Parcelable {
      */
     @NonNull
     public Map<String, String> getAttributes() {
-        if (mAttribute.size() == 0) {
+        if (mAttributes.size() == 0) {
             return Collections.emptyMap();
         }
-        return Collections.unmodifiableMap(mAttribute);
+        return Collections.unmodifiableMap(mAttributes);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append(mValue);
-        for (final Entry<String, String> entry : mAttribute.entrySet()) {
+        for (final Entry<String, String> entry : mAttributes.entrySet()) {
             sb.append("\n");
             sb.append("@");
             sb.append(entry.getKey());
@@ -157,13 +166,13 @@ public class Tag implements Parcelable {
         mValue = in.readString();
         final int size = in.readInt();
         if (size == 0) {
-            mAttribute = Collections.emptyMap();
+            mAttributes = Collections.emptyMap();
         } else {
-            mAttribute = new LinkedHashMap<>(size);
+            mAttributes = new LinkedHashMap<>(size);
             for (int i = 0; i < size; i++) {
                 final String name = in.readString();
                 final String value = in.readString();
-                mAttribute.put(name, value);
+                mAttributes.put(name, value);
             }
         }
     }
@@ -174,8 +183,8 @@ public class Tag implements Parcelable {
             final int flags) {
         dest.writeString(mName);
         dest.writeString(mValue);
-        dest.writeInt(mAttribute.size());
-        for (final Entry<String, String> entry : mAttribute.entrySet()) {
+        dest.writeInt(mAttributes.size());
+        for (final Entry<String, String> entry : mAttributes.entrySet()) {
             dest.writeString(entry.getKey());
             dest.writeString(entry.getValue());
         }
