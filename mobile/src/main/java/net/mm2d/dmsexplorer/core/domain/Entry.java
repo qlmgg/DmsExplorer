@@ -25,6 +25,7 @@ public interface Entry {
 
     boolean isDeletable();
 
+    @NonNull
     Single<Integer> delete();
 
     @NonNull

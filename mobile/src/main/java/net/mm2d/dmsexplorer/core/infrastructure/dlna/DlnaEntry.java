@@ -3,6 +3,7 @@ package net.mm2d.dmsexplorer.core.infrastructure.dlna;
 import android.support.annotation.NonNull;
 
 import net.mm2d.android.upnp.cds.CdsObject;
+import net.mm2d.android.upnp.cds.MediaServer;
 import net.mm2d.dmsexplorer.core.domain.Entry;
 import net.mm2d.dmsexplorer.core.domain.PlayList;
 import net.mm2d.dmsexplorer.domain.entity.ContentType;
@@ -55,9 +56,10 @@ public class DlnaEntry implements Entry {
         return false;
     }
 
+    @NonNull
     @Override
     public Single<Integer> delete() {
-        return null;
+        return Single.just(MediaServer.NO_ERROR);
     }
 
     @NonNull
@@ -108,12 +110,13 @@ public class DlnaEntry implements Entry {
             return mSubject;
         }
         dispose();
-        mSubject = ReplaySubject.<DlnaEntry>create().toSerialized();
+        Subject<DlnaEntry> subject = ReplaySubject.<DlnaEntry>create().toSerialized();
         mDisposable = mDlnaServer.browse(mCdsObject.getObjectId())
                 .observeOn(Schedulers.io())
                 .map(this::createChildEntry)
-                .subscribe(mSubject::onNext, mSubject::onError, mSubject::onComplete);
-        return mSubject.doOnDispose(this::dispose);
+                .subscribe(subject::onNext, subject::onError, subject::onComplete);
+        mSubject = subject;
+        return subject.doOnDispose(this::dispose);
     }
 
     @NonNull
