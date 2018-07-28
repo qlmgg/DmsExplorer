@@ -26,7 +26,7 @@ public interface Entry {
     boolean isDeletable();
 
     @NonNull
-    Single<Integer> delete();
+    Single<Result> delete();
 
     @NonNull
     ContentType getType();

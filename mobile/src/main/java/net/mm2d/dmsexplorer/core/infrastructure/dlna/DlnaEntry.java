@@ -3,9 +3,9 @@ package net.mm2d.dmsexplorer.core.infrastructure.dlna;
 import android.support.annotation.NonNull;
 
 import net.mm2d.android.upnp.cds.CdsObject;
-import net.mm2d.android.upnp.cds.MediaServer;
 import net.mm2d.dmsexplorer.core.domain.Entry;
 import net.mm2d.dmsexplorer.core.domain.PlayList;
+import net.mm2d.dmsexplorer.core.domain.Result;
 import net.mm2d.dmsexplorer.domain.entity.ContentType;
 
 import javax.annotation.Nullable;
@@ -53,13 +53,20 @@ public class DlnaEntry implements Entry {
 
     @Override
     public boolean isDeletable() {
-        return false;
+        return mDlnaServer.hasDeleteFunction() && isNotRestricted();
+    }
+
+    private boolean isNotRestricted() {
+        return mCdsObject.getIntValue(CdsObject.RESTRICTED, -1) == 0;
     }
 
     @NonNull
     @Override
-    public Single<Integer> delete() {
-        return Single.just(MediaServer.NO_ERROR);
+    public Single<Result> delete() {
+        if (isDeletable()) {
+            return mDlnaServer.delete(mCdsObject.getObjectId());
+        }
+        return Single.just(Result.ERROR);
     }
 
     @NonNull
