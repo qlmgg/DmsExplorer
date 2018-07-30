@@ -18,11 +18,11 @@ import io.reactivex.Observable;
 /**
  * @author <a href="mailto:ryo@mm2d.net">大前良介 (OHMAE Ryosuke)</a>
  */
-public class ServersRepository implements ServerRepository {
+public class ServerRepositories implements ServerRepository {
     @NonNull
     private final Collection<ServerRepository> mRepositories;
 
-    public ServersRepository(ServerRepository... repositories) {
+    public ServerRepositories(ServerRepository... repositories) {
         mRepositories = Arrays.asList(repositories);
     }
 
