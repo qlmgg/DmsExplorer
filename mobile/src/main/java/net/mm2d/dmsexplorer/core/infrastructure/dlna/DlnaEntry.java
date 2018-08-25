@@ -117,7 +117,7 @@ public class DlnaEntry implements Entry {
             return mSubject;
         }
         dispose();
-        Subject<DlnaEntry> subject = ReplaySubject.<DlnaEntry>create().toSerialized();
+        final Subject<DlnaEntry> subject = ReplaySubject.<DlnaEntry>create().toSerialized();
         mDisposable = mDlnaServer.browse(mCdsObject.getObjectId())
                 .observeOn(Schedulers.io())
                 .map(this::createChildEntry)

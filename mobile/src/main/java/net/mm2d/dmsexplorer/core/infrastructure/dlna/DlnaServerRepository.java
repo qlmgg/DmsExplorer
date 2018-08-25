@@ -9,6 +9,7 @@ package net.mm2d.dmsexplorer.core.infrastructure.dlna;
 
 import android.support.annotation.NonNull;
 
+import net.mm2d.android.upnp.AvControlPointManager;
 import net.mm2d.android.upnp.cds.MediaServer;
 import net.mm2d.android.upnp.cds.MsControlPoint;
 import net.mm2d.android.upnp.cds.MsControlPoint.MsDiscoveryListener;
@@ -27,12 +28,14 @@ import io.reactivex.subjects.Subject;
  */
 public class DlnaServerRepository implements ServerRepository {
     private Subject<DiscoveryEvent> mDiscoveryEventSubject = PublishSubject.create();
+    private final AvControlPointManager mAvControlPointManager;
     private final MsControlPoint mMsControlPoint;
     private final List<DlnaServer> mDlnaServers = new ArrayList<>();
 
-    public DlnaServerRepository(@NonNull final MsControlPoint cp) {
-        mMsControlPoint = cp;
-        cp.setMsDiscoveryListener(new MsDiscoveryListener() {
+    public DlnaServerRepository(@NonNull final AvControlPointManager cp) {
+        mAvControlPointManager = cp;
+        mMsControlPoint = cp.getMsControlPoint();
+        mMsControlPoint.setMsDiscoveryListener(new MsDiscoveryListener() {
             @Override
             public void onDiscover(@NonNull final MediaServer server) {
                 discover(new DlnaServer(server));
@@ -69,6 +72,7 @@ public class DlnaServerRepository implements ServerRepository {
 
     @Override
     public void startSearch() {
+        mAvControlPointManager.search();
     }
 
     @Override
@@ -77,7 +81,7 @@ public class DlnaServerRepository implements ServerRepository {
 
     @NonNull
     @Override
-    public Observable<DiscoveryEvent> getDiscoveryEvent() {
+    public Observable<DiscoveryEvent> getDiscoveryObservable() {
         return mDiscoveryEventSubject;
     }
 }
